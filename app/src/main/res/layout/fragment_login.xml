@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    tools:context="com.cholak.v3.appPineapple.MainActivity"
+    android:id="@+id/fragment_login"
+    android:background="@color/contentColor">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp">
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/log"
+                    android:id="@+id/imageView2"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:text="@string/enterEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/enterEmail"
+                    android:layout_marginTop="5dp"
+                    android:inputType="textNoSuggestions"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:id="@+id/login"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:text="@string/enterPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/enterPassword"
+                    android:layout_marginTop="5dp"
+                    android:inputType="textNoSuggestions"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:id="@+id/password"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:text="Sing in"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/buttonradius"
+                        android:layout_marginRight="10dp"
+                        android:id="@+id/sing_in"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="140dp" />
+
+                    <Button
+                        android:text="registration 	 "
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/buttonradius"
+                        android:paddingLeft="10dp"
+                        android:id="@+id/registration"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:elevation="0dp"
+                        />
+
+                </LinearLayout>
+
+                <Button
+                    android:text="Continue with Google"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/google_radius"
+                    android:id="@+id/buttonSingInGoogle"
+                    android:layout_marginTop="15dp"
+                    android:inputType="textNoSuggestions"
+
+                    android:elevation="0dp"
+                    android:layout_height="25dp"></Button>
+
+                <com.facebook.login.widget.LoginButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fb_login_btn"
+                    android:layout_below="@+id/googleBtn"
+                    android:layout_alignLeft="@+id/googleBtn"
+                    android:layout_alignStart="@+id/googleBtn"
+                    android:layout_marginTop="20dp"
+                    android:layout_alignRight="@+id/googleBtn"
+                    android:layout_alignEnd="@+id/googleBtn" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

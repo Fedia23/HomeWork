@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#CC3300</color>
+    <color name="colorPrimaryDark">#5b5956</color>
+    <color name="colorAccent">#CC3300</color>
+    <color name="logout">#d1cacd</color>
+    <color name="toolbar">#f5ede8</color>
+    <color name="recycler">#5a786b69</color>
+    <color name="delete">#5e969488</color>
+    <color name="edit">#cc585352</color>
+    <color name="contentColor">#2fae9d9b</color>
+    <color name="white">#ffffff</color>
+    <color name="spiner">#a2ae9d9b</color>
+
+</resources>
