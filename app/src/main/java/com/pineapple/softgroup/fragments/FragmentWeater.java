@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.pineapple.softgroup.DB.DBHelperLastLocation;
+import com.pineapple.softgroup.DB.model.LastLocation;
 import com.pineapple.softgroup.R;
 import com.pineapple.softgroup.Service.IWeaterService;
 import com.pineapple.softgroup.json.forecastJson.Forecast;
@@ -67,6 +69,7 @@ public class FragmentWeater extends Fragment {
     private ProgressBar progressBar;
     private Spinner spinner;
     private LinearLayout forecastLayout;
+    DBHelperLastLocation dbHelperLastLocation;
 
     String myLocation;
 
@@ -122,7 +125,6 @@ public class FragmentWeater extends Fragment {
 
             }
         });
-
 
         key = "4eea53de339c44399f8181049171302";
 
@@ -345,7 +347,6 @@ public class FragmentWeater extends Fragment {
         if(new AsynkWeater().execute() == null)
             return;
         new AsynkWeater().execute().cancel(false);
-
     }
 
     private class AsynkWeater extends AsyncTask<Void, Void, Void> {

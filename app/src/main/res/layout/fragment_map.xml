@@ -4,27 +4,6 @@
     android:layout_height="match_parent"
     android:id="@+id/fragment_map">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/container_button">
-
-        <Button
-            android:text="Change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/chengeMarker"
-            android:layout_weight="1" />
-
-        <Button
-            android:text="Delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/deleteMarker"
-            android:layout_weight="1" />
-    </LinearLayout>
-
 
     <LinearLayout
         android:orientation="vertical"

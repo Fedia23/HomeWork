@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,10 +72,9 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
     private String description;
     private List<com.pineapple.softgroup.DB.model.Marker> markersList;
     private List<LastLocation> lastLocationsList;
-    private Button delete, chagne;
     private LatLng latLng;
     private DBHelperLastLocation dbHelperLastLocation;
-    SharedPreferences sharedPreferences;
+
 
     public static FragmentMap newInstance() {
         FragmentMap fragment = new FragmentMap();
@@ -89,28 +89,12 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
         dbHelperMap = new DBHelperMap(getActivity());
         dbHelperLastLocation = new DBHelperLastLocation(getActivity());
 
-        delete = (Button) v.findViewById(R.id.deleteMarker);
-        chagne = (Button) v.findViewById(R.id.chengeMarker);
         mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.lmapFragment);
 
         mapFragment.getMapAsync(this);
 
         markersList = dbHelperMap.getAllMarkers();
         lastLocationsList = dbHelperLastLocation.getAllLockation();
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteMarker(getLatLng());
-            }
-        });
-
-        chagne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeMarker(getLatLng());
-            }
-        });
 
         return v;
     }
@@ -210,8 +194,48 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
 
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                marker.showInfoWindow();
+            public boolean onMarkerClick(final Marker marker) {
+
+                AlertDialog.Builder markerAlertDialog = new AlertDialog.Builder(getActivity());
+                LinearLayout markerLayout = new LinearLayout(mapFragment.getActivity());
+                markerLayout.setOrientation(LinearLayout.VERTICAL);
+
+                final TextView titleMarker = new TextView(mapFragment.getActivity());
+                final TextView descriptMarker = new TextView(mapFragment.getActivity());
+
+                titleMarker.setText(marker.getTitle());
+                titleMarker.setTextSize(23);
+                titleMarker.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                descriptMarker.setText(marker.getSnippet());
+                descriptMarker.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                descriptMarker.setTextSize(15);
+                markerLayout.addView(titleMarker);
+                markerLayout.addView(descriptMarker);
+
+                markerAlertDialog.setView(markerLayout);
+
+                markerAlertDialog.setPositiveButton("CHENGE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        changeMarker(marker.getPosition());
+                    }
+                });
+
+                markerAlertDialog.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteMarker(marker.getPosition());
+                    }
+                });
+
+                markerAlertDialog.setNeutralButton("BACK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                markerAlertDialog.show();
                 setLatLnd(marker.getPosition());
                 return true;
             }
