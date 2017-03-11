@@ -15,7 +15,6 @@ public interface IWeaterService {
     @GET("/v1/current.json")
     Call<Example> listRepos(@Query("key") String key, @Query("q") String q);
 
-
     @GET("/v1/forecast.json")
     Call<ForecastExample> getInfo(@Query("key") String key, @Query("q") String q, @Query("days") int days);
 

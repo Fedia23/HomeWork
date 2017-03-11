@@ -47,9 +47,8 @@ public class FragmentContact extends Fragment {
     android.support.v4.app.FragmentManager fragmentManager;
     android.support.v4.app.FragmentTransaction fragmentTransaction;
 
-    FragmentLogout bFrag;
-    AddNumberFragment addFruit;
-    private FragmentWeater fragmentWeater;
+    FragmentLogout fragmentLogout;
+    AddNumberFragment addNumberFragment;
 
     DBHelperContact dbHelperContact;
     public List<Contacts> contactsList;
@@ -73,9 +72,8 @@ public class FragmentContact extends Fragment {
         ((MainActivity)getActivity()).toggle.setDrawerIndicatorEnabled(true);
         ((MainActivity)getActivity()).drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
-        addFruit = new AddNumberFragment();
-        bFrag = new FragmentLogout();
-        fragmentWeater = new FragmentWeater();
+        addNumberFragment = new AddNumberFragment();
+        fragmentLogout = new FragmentLogout();
 
         progressBar = (ProgressBar)v.findViewById(R.id.progressBar);
 
@@ -97,9 +95,9 @@ public class FragmentContact extends Fragment {
             @Override
             public void onClick(View view) {
                 animatioFab(view);
-                addFruit = new AddNumberFragment();
+                addNumberFragment = new AddNumberFragment();
                 fragmentManager.beginTransaction().remove(FragmentContact.this).commit();
-                fragmentManager.beginTransaction().add(R.id.container, addFruit).commit();
+                fragmentManager.beginTransaction().add(R.id.container, addNumberFragment).commit();
                 mAdapter.notifyDataSetChanged();
             }
         });
@@ -151,7 +149,6 @@ public class FragmentContact extends Fragment {
             mRecyclerView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
         }
-
     };
 
     private static List<Contacts> filter(List<Contacts> models, String query) {
@@ -185,7 +182,7 @@ public class FragmentContact extends Fragment {
 
     public void logoutPress() {
         fragmentManager.beginTransaction().remove(FragmentContact.this).commit();
-        fragmentManager.beginTransaction().add(R.id.container, bFrag).commit();
+        fragmentManager.beginTransaction().add(R.id.container, fragmentLogout).commit();
     }
 
     private boolean dublicatContact(String number) {

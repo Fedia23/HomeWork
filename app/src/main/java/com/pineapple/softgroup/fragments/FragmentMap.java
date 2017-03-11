@@ -1,79 +1,60 @@
 package com.pineapple.softgroup.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.AbsoluteLayout;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pineapple.softgroup.DB.DBHelperLastLocation;
 import com.pineapple.softgroup.DB.DBHelperMap;
 import com.pineapple.softgroup.DB.model.LastLocation;
-import com.pineapple.softgroup.MainActivity;
-import android.os.Handler;
 import com.pineapple.softgroup.R;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.LogRecord;
-import java.util.zip.Inflater;
 
 import static android.view.FrameMetrics.ANIMATION_DURATION;
 
 public class FragmentMap extends Fragment implements OnMapReadyCallback {
 
     final String TAG = "Map";
+
+    private String name;
+    private String description;
+
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private Marker marker;
-    private DBHelperMap dbHelperMap;
-    private String name;
-    private String description;
+
     private List<com.pineapple.softgroup.DB.model.Marker> markersList;
     private List<LastLocation> lastLocationsList;
     private LatLng latLng;
+
     private DBHelperLastLocation dbHelperLastLocation;
+    private DBHelperMap dbHelperMap;
 
 
     public static FragmentMap newInstance() {
@@ -137,9 +118,9 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setTiltGesturesEnabled(true);
         map.getCameraPosition();
-
         map.animateCamera(CameraUpdateFactory.newLatLng(lastLatLng()), ANIMATION_DURATION, null);
         map.setMinZoomPreference(12);
+        setLatLnd(map.getCameraPosition().target);
     }
 
     public void onClickTest() {
@@ -265,9 +246,6 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
 
                     iter.remove();
                     dbHelperMap.deleteMarker(s);
-
-//                    Toast.makeText(getActivity(), "Delete marker " + s.getName(), Toast.LENGTH_LONG)
-//                            .show();
                 }
             }
         }

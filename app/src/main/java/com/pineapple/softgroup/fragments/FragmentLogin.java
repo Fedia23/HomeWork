@@ -4,10 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -45,6 +49,8 @@ import com.pineapple.softgroup.R;
 import com.pineapple.softgroup.DB.model.User;
 
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class FragmentLogin extends Fragment implements
@@ -122,6 +128,7 @@ public class FragmentLogin extends Fragment implements
         sing_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 final String Semail    = login.getText().toString();
                 final String Spassword = password.getText().toString();
                 if (validation(Semail, Spassword)) {
@@ -282,6 +289,8 @@ public class FragmentLogin extends Fragment implements
                     }
                 });
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -1,12 +1,8 @@
 package com.pineapple.softgroup.fragments;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -67,15 +62,14 @@ public class FragmentWeater extends Fragment {
     private TextView oneDay, twoDay, threeDay, fourDay, fiveDay, sixDay;
     private ImageView imageWeather, oneImage, twoImage, threeImage, fourImage, fiveImage, sixImage;
     private ProgressBar progressBar;
-    private Spinner spinner;
     private LinearLayout forecastLayout;
+
     DBHelperLastLocation dbHelperLastLocation;
+    List<LastLocation> lastLocationList;
 
     String myLocation;
 
     String key;
-    String selected;
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +88,6 @@ public class FragmentWeater extends Fragment {
         textWind = (TextView) v.findViewById(R.id.textWind);
         imageWeather = (ImageView) v.findViewById(R.id.imageWeather);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar2);
-        spinner = (Spinner) v.findViewById(R.id.spinner);
 
         forecastLayout = (LinearLayout) v.findViewById(R.id.forecastLayout);
         oneDay = (TextView) v.findViewById(R.id.oneDay);
@@ -110,21 +103,37 @@ public class FragmentWeater extends Fragment {
         sixDay = (TextView) v.findViewById(R.id.sixDay);
         sixImage = (ImageView) v.findViewById(R.id.sixImage);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] choose = getResources().getStringArray(R.array.city);
-                choose[0] = myLocation;
-                selected = spinner.getSelectedItem().toString();
-                System.out.println(myLocation + " SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-                new AsynkWeater().execute();
-            }
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String[] choose = getResources().getStringArray(R.array.city);
+//                selected = spinner.getSelectedItem().toString();
+//
+//                new AsynkWeater().execute();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        dbHelperLastLocation = new DBHelperLastLocation(getActivity());
+        lastLocationList = dbHelperLastLocation.getAllLockation();
+        FragmentMap fragmentMap = FragmentMap.newInstance();
 
+        if (fragmentMap.getLatLng() == null) {
+            if (lastLocationList.isEmpty()) {
+                myLocation = "Chernivtsi";
+            } else {
+                myLocation = lastLocationList.get(lastLocationList.size() - 1).getLatitude() +
+                        "," + lastLocationList.get(lastLocationList.size() - 1).getLongitude();
             }
-        });
+        } else {
+            myLocation = (fragmentMap.getLatLng().latitude + "," + fragmentMap.getLatLng().longitude).toString();
+        }
+
+
 
         key = "4eea53de339c44399f8181049171302";
 
@@ -177,31 +186,35 @@ public class FragmentWeater extends Fragment {
                 .build();
         service = retrofit.create(IWeaterService.class);
         int days = 6;
-        service.getInfo(key, selected, days).enqueue(new Callback<ForecastExample>() {
+        service.getInfo(key, myLocation, days).enqueue(new Callback<ForecastExample>() {
             @Override
             public void onResponse(Call<ForecastExample> call, Response<ForecastExample> response) {
                 Forecast forecast = response.body().getForecast();
                 Log.d("List size=", String.valueOf(forecast.getForecastday().size()));
-                oneDay.setText(forecast.getForecastday().get(0).getDay().getMintempC().toString() + "°C");
-                twoDay.setText(forecast.getForecastday().get(1).getDay().getMintempC().toString() + "°C");
-                threeDay.setText(forecast.getForecastday().get(2).getDay().getMintempC().toString() + "°C");
-                fourDay.setText(forecast.getForecastday().get(3).getDay().getMintempC().toString() + "°C");
-                fiveDay.setText(forecast.getForecastday().get(4).getDay().getMintempC().toString() + "°C");
-                sixDay.setText(forecast.getForecastday().get(5).getDay().getMintempC().toString() + "°C");
+                try {
+                    oneDay.setText(forecast.getForecastday().get(0).getDay().getMintempC().toString() + "°C");
+                    twoDay.setText(forecast.getForecastday().get(1).getDay().getMintempC().toString() + "°C");
+                    threeDay.setText(forecast.getForecastday().get(2).getDay().getMintempC().toString() + "°C");
+                    fourDay.setText(forecast.getForecastday().get(3).getDay().getMintempC().toString() + "°C");
+                    fiveDay.setText(forecast.getForecastday().get(4).getDay().getMintempC().toString() + "°C");
+                    sixDay.setText(forecast.getForecastday().get(5).getDay().getMintempC().toString() + "°C");
 
-                String dayOneIcon = forecast.getForecastday().get(0).getDay().getCondition().getIcon();
-                String dayTwoIcon = forecast.getForecastday().get(1).getDay().getCondition().getIcon();
-                String dayThreeIcon = forecast.getForecastday().get(2).getDay().getCondition().getIcon();
-                String dayFourIcon = forecast.getForecastday().get(3).getDay().getCondition().getIcon();
-                String dayFiveIcon = forecast.getForecastday().get(4).getDay().getCondition().getIcon();
-                String daySixIcon = forecast.getForecastday().get(5).getDay().getCondition().getIcon();
+                    String dayOneIcon = forecast.getForecastday().get(0).getDay().getCondition().getIcon();
+                    String dayTwoIcon = forecast.getForecastday().get(1).getDay().getCondition().getIcon();
+                    String dayThreeIcon = forecast.getForecastday().get(2).getDay().getCondition().getIcon();
+                    String dayFourIcon = forecast.getForecastday().get(3).getDay().getCondition().getIcon();
+                    String dayFiveIcon = forecast.getForecastday().get(4).getDay().getCondition().getIcon();
+                    String daySixIcon = forecast.getForecastday().get(5).getDay().getCondition().getIcon();
 
-                Glide.with(FragmentWeater.this).load("http:" + dayOneIcon).centerCrop().into(oneImage);
-                Glide.with(FragmentWeater.this).load("http:" + dayTwoIcon).centerCrop().into(twoImage);
-                Glide.with(FragmentWeater.this).load("http:" + dayThreeIcon).centerCrop().into(threeImage);
-                Glide.with(FragmentWeater.this).load("http:" + dayFourIcon).centerCrop().into(fourImage);
-                Glide.with(FragmentWeater.this).load("http:" + dayFiveIcon).centerCrop().into(fiveImage);
-                Glide.with(FragmentWeater.this).load("http:" + daySixIcon).centerCrop().into(sixImage);
+                    Glide.with(FragmentWeater.this).load("http:" + dayOneIcon).centerCrop().into(oneImage);
+                    Glide.with(FragmentWeater.this).load("http:" + dayTwoIcon).centerCrop().into(twoImage);
+                    Glide.with(FragmentWeater.this).load("http:" + dayThreeIcon).centerCrop().into(threeImage);
+                    Glide.with(FragmentWeater.this).load("http:" + dayFourIcon).centerCrop().into(fourImage);
+                    Glide.with(FragmentWeater.this).load("http:" + dayFiveIcon).centerCrop().into(fiveImage);
+                    Glide.with(FragmentWeater.this).load("http:" + daySixIcon).centerCrop().into(sixImage);
+                } catch (Exception e) {
+
+                }
             }
 
             @Override
@@ -210,21 +223,25 @@ public class FragmentWeater extends Fragment {
             }
         });
 
-        service.listRepos(key, selected).enqueue(new Callback<Example>() {
+        service.listRepos(key, myLocation).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
                 Location location = response.body().getLocation();
                 Current current = response.body().getCurrent();
-                condition = response.body().getCurrent().getCondition();
-                conditionCode = response.body().getCurrent().getCondition().getCode();
+                try {
+                    condition = response.body().getCurrent().getCondition();
+                    conditionCode = response.body().getCurrent().getCondition().getCode();
 
-                textLocation.setText(location.getCountry() + ", " + location.getRegion());
-                textCurent.setText(current.getLastUpdated());
-                textTemp.setText("Temperature " + current.getTempC() + "°C");
-                textWind.setText("Wind: " + current.getWindMph() + "m/ph");
-                textCondition.setText("Condition: " + condition.getText());
-                String ikon = condition.getIcon();
+                    textLocation.setText(location.getName() + " ! " + location.getCountry() + ", " + location.getRegion());
 
+                    textCurent.setText(current.getLastUpdated());
+                    textTemp.setText("Temperature " + current.getTempC() + "°C");
+                    textWind.setText("Wind: " + current.getWindMph() + "m/ph");
+                    textCondition.setText("Condition: " + condition.getText());
+                    String ikon = condition.getIcon();
+                } catch(Exception e) {
+
+                }
                 //Glide.with(FragmentWeater.this).load("http:"+ikon).centerCrop().into(imageWeather);
                 // Picasso.with(getActivity()).load("http:"+ikon).into(imageWeather);
                 setupUI();
@@ -238,108 +255,112 @@ public class FragmentWeater extends Fragment {
     }
 
     private void setupUI() {
-        if (condition != null) {
-            if (conditionCode == 1000) {
-                imageWeather.setImageResource(R.drawable.icon_1000);
-            } else if (conditionCode == 1003) {
-                imageWeather.setImageResource(R.drawable.icon_1003);
-            } else if (conditionCode == 1006) {
-                imageWeather.setImageResource(R.drawable.icon_1006);
-            } else if (conditionCode == 1009) {
-                imageWeather.setImageResource(R.drawable.icon_1009);
-            } else if (conditionCode == 1030) {
-                imageWeather.setImageResource(R.drawable.icon_1030);
-            } else if (conditionCode == 1063) {
-                imageWeather.setImageResource(R.drawable.icon_1063);
-            } else if (conditionCode == 1066) {
-                imageWeather.setImageResource(R.drawable.icon_1066);
-            } else if (conditionCode == 1069) {
-                imageWeather.setImageResource(R.drawable.icon_1069);
-            } else if (conditionCode == 1072) {
-                imageWeather.setImageResource(R.drawable.icon_1072);
-            } else if (conditionCode == 1201) {
-                imageWeather.setImageResource(R.drawable.icon_1201);
-            } else if (conditionCode == 1087) {
-                imageWeather.setImageResource(R.drawable.icon_1087);
-            } else if (conditionCode == 1114) {
-                imageWeather.setImageResource(R.drawable.icon_1114);
-            } else if (conditionCode == 1117) {
-                imageWeather.setImageResource(R.drawable.icon_1117);
-            } else if (conditionCode == 1135) {
-                imageWeather.setImageResource(R.drawable.icon_1135);
-            } else if (conditionCode == 1147) {
-                imageWeather.setImageResource(R.drawable.icon_1147);
-            } else if (conditionCode == 1150) {
-                imageWeather.setImageResource(R.drawable.icon_1150);
-            } else if (conditionCode == 1153) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1168) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1171) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1180) {
-                imageWeather.setImageResource(R.drawable.icon_1180);
-            } else if (conditionCode == 1183) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1186) {
-                imageWeather.setImageResource(R.drawable.icon_1186);
-            } else if (conditionCode == 1189) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1192) {
-                imageWeather.setImageResource(R.drawable.icon_1192);
-            } else if (conditionCode == 1195) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1198) {
-                imageWeather.setImageResource(R.drawable.icon_1198);
-            } else if (conditionCode == 1201) {
-                imageWeather.setImageResource(R.drawable.rain);
-            } else if (conditionCode == 1204) {
-                imageWeather.setImageResource(R.drawable.icon_1204);
-            } else if (conditionCode == 1207) {
-                imageWeather.setImageResource(R.drawable.icon_1207);
-            } else if (conditionCode == 1210) {
-                imageWeather.setImageResource(R.drawable.icon_1210);
-            } else if (conditionCode == 1213) {
-                imageWeather.setImageResource(R.drawable.icon_1213);
-            } else if (conditionCode == 1216) {
-                imageWeather.setImageResource(R.drawable.icon_1216);
-            } else if (conditionCode == 1219) {
-                imageWeather.setImageResource(R.drawable.icon_1219);
-            } else if (conditionCode == 1222) {
-                imageWeather.setImageResource(R.drawable.icon_1222);
-            } else if (conditionCode == 1225) {
-                imageWeather.setImageResource(R.drawable.icon_1225);
-            } else if (conditionCode == 1237) {
-                imageWeather.setImageResource(R.drawable.icon_1237);
-            } else if (conditionCode == 1240) {
-                imageWeather.setImageResource(R.drawable.icon_1240);
-            } else if (conditionCode == 1243) {
-                imageWeather.setImageResource(R.drawable.icon_1243);
-            } else if (conditionCode == 1246) {
-                imageWeather.setImageResource(R.drawable.icon_1246);
-            } else if (conditionCode == 1249) {
-                imageWeather.setImageResource(R.drawable.icon_1249);
-            } else if (conditionCode == 1252) {
-                imageWeather.setImageResource(R.drawable.icon_1252);
-            } else if (conditionCode == 1255) {
-                imageWeather.setImageResource(R.drawable.icon_1255);
-            } else if (conditionCode == 1258) {
-                imageWeather.setImageResource(R.drawable.icon_1258);
-            } else if (conditionCode == 1261) {
-                imageWeather.setImageResource(R.drawable.icon_1261);
-            } else if (conditionCode == 1264) {
-                imageWeather.setImageResource(R.drawable.icon_1264);
-            } else if (conditionCode == 1273) {
-                imageWeather.setImageResource(R.drawable.icon_1273);
-            } else if (conditionCode == 1276) {
-                imageWeather.setImageResource(R.drawable.icon_1276);
-            } else if (conditionCode == 1279) {
-                imageWeather.setImageResource(R.drawable.icon_1279);
-            } else if (conditionCode == 1282) {
-                imageWeather.setImageResource(R.drawable.icon_1282);
-            } else {
-                System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+        try {
+            if (condition != null) {
+                if (conditionCode == 1000) {
+                    imageWeather.setImageResource(R.drawable.icon_1000);
+                } else if (conditionCode == 1003) {
+                    imageWeather.setImageResource(R.drawable.icon_1003);
+                } else if (conditionCode == 1006) {
+                    imageWeather.setImageResource(R.drawable.icon_1006);
+                } else if (conditionCode == 1009) {
+                    imageWeather.setImageResource(R.drawable.icon_1009);
+                } else if (conditionCode == 1030) {
+                    imageWeather.setImageResource(R.drawable.icon_1030);
+                } else if (conditionCode == 1063) {
+                    imageWeather.setImageResource(R.drawable.icon_1063);
+                } else if (conditionCode == 1066) {
+                    imageWeather.setImageResource(R.drawable.icon_1066);
+                } else if (conditionCode == 1069) {
+                    imageWeather.setImageResource(R.drawable.icon_1069);
+                } else if (conditionCode == 1072) {
+                    imageWeather.setImageResource(R.drawable.icon_1072);
+                } else if (conditionCode == 1201) {
+                    imageWeather.setImageResource(R.drawable.icon_1201);
+                } else if (conditionCode == 1087) {
+                    imageWeather.setImageResource(R.drawable.icon_1087);
+                } else if (conditionCode == 1114) {
+                    imageWeather.setImageResource(R.drawable.icon_1114);
+                } else if (conditionCode == 1117) {
+                    imageWeather.setImageResource(R.drawable.icon_1117);
+                } else if (conditionCode == 1135) {
+                    imageWeather.setImageResource(R.drawable.icon_1135);
+                } else if (conditionCode == 1147) {
+                    imageWeather.setImageResource(R.drawable.icon_1147);
+                } else if (conditionCode == 1150) {
+                    imageWeather.setImageResource(R.drawable.icon_1150);
+                } else if (conditionCode == 1153) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1168) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1171) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1180) {
+                    imageWeather.setImageResource(R.drawable.icon_1180);
+                } else if (conditionCode == 1183) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1186) {
+                    imageWeather.setImageResource(R.drawable.icon_1186);
+                } else if (conditionCode == 1189) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1192) {
+                    imageWeather.setImageResource(R.drawable.icon_1192);
+                } else if (conditionCode == 1195) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1198) {
+                    imageWeather.setImageResource(R.drawable.icon_1198);
+                } else if (conditionCode == 1201) {
+                    imageWeather.setImageResource(R.drawable.rain);
+                } else if (conditionCode == 1204) {
+                    imageWeather.setImageResource(R.drawable.icon_1204);
+                } else if (conditionCode == 1207) {
+                    imageWeather.setImageResource(R.drawable.icon_1207);
+                } else if (conditionCode == 1210) {
+                    imageWeather.setImageResource(R.drawable.icon_1210);
+                } else if (conditionCode == 1213) {
+                    imageWeather.setImageResource(R.drawable.icon_1213);
+                } else if (conditionCode == 1216) {
+                    imageWeather.setImageResource(R.drawable.icon_1216);
+                } else if (conditionCode == 1219) {
+                    imageWeather.setImageResource(R.drawable.icon_1219);
+                } else if (conditionCode == 1222) {
+                    imageWeather.setImageResource(R.drawable.icon_1222);
+                } else if (conditionCode == 1225) {
+                    imageWeather.setImageResource(R.drawable.icon_1225);
+                } else if (conditionCode == 1237) {
+                    imageWeather.setImageResource(R.drawable.icon_1237);
+                } else if (conditionCode == 1240) {
+                    imageWeather.setImageResource(R.drawable.icon_1240);
+                } else if (conditionCode == 1243) {
+                    imageWeather.setImageResource(R.drawable.icon_1243);
+                } else if (conditionCode == 1246) {
+                    imageWeather.setImageResource(R.drawable.icon_1246);
+                } else if (conditionCode == 1249) {
+                    imageWeather.setImageResource(R.drawable.icon_1249);
+                } else if (conditionCode == 1252) {
+                    imageWeather.setImageResource(R.drawable.icon_1252);
+                } else if (conditionCode == 1255) {
+                    imageWeather.setImageResource(R.drawable.icon_1255);
+                } else if (conditionCode == 1258) {
+                    imageWeather.setImageResource(R.drawable.icon_1258);
+                } else if (conditionCode == 1261) {
+                    imageWeather.setImageResource(R.drawable.icon_1261);
+                } else if (conditionCode == 1264) {
+                    imageWeather.setImageResource(R.drawable.icon_1264);
+                } else if (conditionCode == 1273) {
+                    imageWeather.setImageResource(R.drawable.icon_1273);
+                } else if (conditionCode == 1276) {
+                    imageWeather.setImageResource(R.drawable.icon_1276);
+                } else if (conditionCode == 1279) {
+                    imageWeather.setImageResource(R.drawable.icon_1279);
+                } else if (conditionCode == 1282) {
+                    imageWeather.setImageResource(R.drawable.icon_1282);
+                } else {
+
+                }
             }
+        } catch(Exception e) {
+
         }
     }
 
@@ -369,7 +390,10 @@ public class FragmentWeater extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             if (isCancelled()) return null;
-            loadDate();
+            try {
+                loadDate();
+            } catch(Exception e) {}
+
             return null;
         }
 
@@ -377,7 +401,6 @@ public class FragmentWeater extends Fragment {
         protected void onCancelled() {
             super.onCancelled();
             Log.d(LOG_TAG, "Cancel");
-
         }
 
         @Override

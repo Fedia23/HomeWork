@@ -16,7 +16,7 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/logoutD"
+                android:id="@+id/logoutDrawer"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Log out" />
         </menu>

@@ -1,5 +1,6 @@
 package com.pineapple.softgroup;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -14,9 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.pineapple.softgroup.DB.DBHelper;
 import com.pineapple.softgroup.fragments.FragmentContact;
 import com.pineapple.softgroup.fragments.FragmentLogin;
 import com.pineapple.softgroup.fragments.FragmentLogout;
@@ -29,20 +28,18 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "Pineapple";
     private static final int RC_SIGN_IN = 9001;
 
-    SharedPreferences sharedPreferences;
     private FragmentLogin fragmentLogin;
     private FragmentContact fragmentWallcome;
     private FragmentWeater fragmentWeater;
     private FragmentLogout fragmentLogout;
     private FragmentMap fragmentMap;
+
     public DrawerLayout drawer;
     public ActionBarDrawerToggle toggle;
-    private TextView userEmail;
-    DBHelper dbHelper;
+
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-
-
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +54,6 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        //retrofit
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -83,6 +78,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void replaceFragment(Fragment fragment) {
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.commit();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -97,26 +98,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.logoutD:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragmentLogout);
-                fragmentTransaction.commit();
+            case R.id.logoutDrawer:
+                replaceFragment(fragmentLogout);
                 return true;
             case R.id.contact_item:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragmentWallcome);
-                fragmentTransaction.commit();
+                replaceFragment(fragmentWallcome);
                 return true;
             case R.id.weater_item:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragmentWeater);
-                fragmentTransaction.commit();
+                replaceFragment(fragmentWeater);
                 return true;
             case R.id.map_item:
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, fragmentMap);
-                fragmentTransaction.commit();
-
+                replaceFragment(fragmentMap);
+                return true;
             default:
 
                 break;
