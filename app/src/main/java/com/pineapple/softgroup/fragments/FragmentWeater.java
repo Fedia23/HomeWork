@@ -1,8 +1,12 @@
 package com.pineapple.softgroup.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.pineapple.softgroup.DB.DBHelperLastLocation;
@@ -53,8 +58,6 @@ public class FragmentWeater extends Fragment {
     private List<Example> exampleList;
     List<Forecastday> forecastdays;
 
-    private LocationManager locationManager;
-
     private com.pineapple.softgroup.json.Condition condition;
     private int conditionCode;
 
@@ -64,12 +67,17 @@ public class FragmentWeater extends Fragment {
     private ProgressBar progressBar;
     private LinearLayout forecastLayout;
 
+    private LocationManager locationManager;
+
+    String LLK;
+
+
     DBHelperLastLocation dbHelperLastLocation;
     List<LastLocation> lastLocationList;
 
-    String myLocation;
+    private String myLocation;
 
-    String key;
+    private String key;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,26 +126,7 @@ public class FragmentWeater extends Fragment {
 //            }
 //        });
 
-        dbHelperLastLocation = new DBHelperLastLocation(getActivity());
-        lastLocationList = dbHelperLastLocation.getAllLockation();
-        FragmentMap fragmentMap = FragmentMap.newInstance();
-
-        if (fragmentMap.getLatLng() == null) {
-            if (lastLocationList.isEmpty()) {
-                myLocation = "Chernivtsi";
-            } else {
-                myLocation = lastLocationList.get(lastLocationList.size() - 1).getLatitude() +
-                        "," + lastLocationList.get(lastLocationList.size() - 1).getLongitude();
-            }
-        } else {
-            myLocation = (fragmentMap.getLatLng().latitude + "," + fragmentMap.getLatLng().longitude).toString();
-        }
-
-
-
-        key = "4eea53de339c44399f8181049171302";
-
-//        adapterWeater = (RecyclerView)v.findViewById(R.id.recyclerWeater);
+        //        adapterWeater = (RecyclerView)v.findViewById(R.id.recyclerWeater);
 //        mLayoutManager = new LinearLayoutManager(getActivity());
 //        adapterWeater.setLayoutManager(mLayoutManager);
 //        mAdapter = new WeaterAdapter(exampleList);
@@ -145,15 +134,29 @@ public class FragmentWeater extends Fragment {
 //        adapterWeater.getAdapter().notifyDataSetChanged();
 //        mAdapter.notifyDataSetChanged();
 
+        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+
+        key = "4eea53de339c44399f8181049171302";
+
         new AsynkWeater().execute();
 
-        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
         return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                1000 * 10, 10, locationListener);
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                locationListener);
     }
 
     @Override
@@ -167,17 +170,55 @@ public class FragmentWeater extends Fragment {
         cancelTask();
     }
 
-    private String formatLocation(android.location.Location location) {
-        Geocoder geocoder = new Geocoder(getActivity(), Locale.ENGLISH);
-        try {
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            Address obj = addresses.get(0);
-            return obj.getAddressLine(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            setMyLocation(location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    public void setMyLocation(android.location.Location location) {
+
+        dbHelperLastLocation = new DBHelperLastLocation(getActivity());
+        lastLocationList = dbHelperLastLocation.getAllLockation();
+
+        if (location == null) {
+            if (lastLocationList.isEmpty()) {
+                Toast.makeText(getActivity(), " NO Connect", Toast.LENGTH_LONG).show();
+                myLocation = "Kiev";
+            } else {
+                Toast.makeText(getActivity(), " Last Connection", Toast.LENGTH_LONG).show();
+                myLocation = lastLocationList.get(lastLocationList.size() - 1).getLatitude() +
+                        "," + lastLocationList.get(lastLocationList.size() - 1).getLongitude();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Connection", Toast.LENGTH_LONG).show();
+            myLocation = (location.getLatitude() + "," + location.getLongitude());
         }
     }
+
+    public String getMyLocation() {
+        if (myLocation.isEmpty()) {
+            Toast.makeText(getActivity(), "Fail", Toast.LENGTH_LONG).show();
+        }
+        return myLocation;
+    }
+
 
     public void loadDate() {
         retrofit = new Retrofit.Builder()
@@ -186,7 +227,7 @@ public class FragmentWeater extends Fragment {
                 .build();
         service = retrofit.create(IWeaterService.class);
         int days = 6;
-        service.getInfo(key, myLocation, days).enqueue(new Callback<ForecastExample>() {
+        service.getInfo(key, getMyLocation(), days).enqueue(new Callback<ForecastExample>() {
             @Override
             public void onResponse(Call<ForecastExample> call, Response<ForecastExample> response) {
                 Forecast forecast = response.body().getForecast();
@@ -223,7 +264,7 @@ public class FragmentWeater extends Fragment {
             }
         });
 
-        service.listRepos(key, myLocation).enqueue(new Callback<Example>() {
+        service.listRepos(key, getMyLocation()).enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, Response<Example> response) {
                 Location location = response.body().getLocation();
