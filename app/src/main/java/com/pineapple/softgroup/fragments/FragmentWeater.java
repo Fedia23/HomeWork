@@ -106,29 +106,6 @@ public class FragmentWeater extends Fragment {
         sixDay = (TextView) v.findViewById(R.id.sixDay);
         sixImage = (ImageView) v.findViewById(R.id.sixImage);
 
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                String[] choose = getResources().getStringArray(R.array.city);
-//                selected = spinner.getSelectedItem().toString();
-//
-//                new AsynkWeater().execute();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-
-        //        adapterWeater = (RecyclerView)v.findViewById(R.id.recyclerWeater);
-//        mLayoutManager = new LinearLayoutManager(getActivity());
-//        adapterWeater.setLayoutManager(mLayoutManager);
-//        mAdapter = new WeaterAdapter(exampleList);
-//        adapterWeater.setAdapter(mAdapter);
-//        adapterWeater.getAdapter().notifyDataSetChanged();
-//        mAdapter.notifyDataSetChanged();
-
         locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
         key = "4eea53de339c44399f8181049171302";
@@ -142,16 +119,6 @@ public class FragmentWeater extends Fragment {
     public void onStart() {
         super.onStart();
         locationStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
