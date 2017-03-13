@@ -139,9 +139,29 @@ public class FragmentWeater extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        locationStart();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-         LocationListener locationListener = new LocationListener() {
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cancelTask();
+    }
+
+    private void locationStart() {
+        LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(android.location.Location location) {
                 setMyLocation(location);
@@ -174,17 +194,7 @@ public class FragmentWeater extends Fragment {
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
                 locationListener);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        cancelTask();
     }
 
     public void setMyLocation(android.location.Location location) {
@@ -205,6 +215,7 @@ public class FragmentWeater extends Fragment {
             Toast.makeText(getActivity(), "Connection...", Toast.LENGTH_LONG).show();
             myLocation = (location.getLatitude() + "," + location.getLongitude());
         }
+        new AsynkWeater().execute();
     }
 
     public String getMyLocation() {
