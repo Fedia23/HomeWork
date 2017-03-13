@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.pineapple.softgroup.DB.DBHelperLastLocation;
 import com.pineapple.softgroup.DB.model.LastLocation;
+import com.pineapple.softgroup.MainActivity;
 import com.pineapple.softgroup.R;
 import com.pineapple.softgroup.Service.IWeaterService;
 import com.pineapple.softgroup.json.forecastJson.Forecast;
@@ -67,16 +68,10 @@ public class FragmentWeater extends Fragment {
     private ProgressBar progressBar;
     private LinearLayout forecastLayout;
 
+    private DBHelperLastLocation dbHelperLastLocation;
+    private List<LastLocation> lastLocationList;
     private LocationManager locationManager;
-
-    String LLK;
-
-
-    DBHelperLastLocation dbHelperLastLocation;
-    List<LastLocation> lastLocationList;
-
     private String myLocation;
-
     private String key;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +141,28 @@ public class FragmentWeater extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+         LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(android.location.Location location) {
+                setMyLocation(location);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
         if (ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -170,28 +187,6 @@ public class FragmentWeater extends Fragment {
         cancelTask();
     }
 
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(android.location.Location location) {
-            setMyLocation(location);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
     public void setMyLocation(android.location.Location location) {
 
         dbHelperLastLocation = new DBHelperLastLocation(getActivity());
@@ -199,7 +194,7 @@ public class FragmentWeater extends Fragment {
 
         if (location == null) {
             if (lastLocationList.isEmpty()) {
-                Toast.makeText(getActivity(), " NO Connect", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), " NO Connect !!!", Toast.LENGTH_LONG).show();
                 myLocation = "Kiev";
             } else {
                 Toast.makeText(getActivity(), " Last Connection", Toast.LENGTH_LONG).show();
@@ -207,7 +202,7 @@ public class FragmentWeater extends Fragment {
                         "," + lastLocationList.get(lastLocationList.size() - 1).getLongitude();
             }
         } else {
-            Toast.makeText(getActivity(), "Connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Connection...", Toast.LENGTH_LONG).show();
             myLocation = (location.getLatitude() + "," + location.getLongitude());
         }
     }
