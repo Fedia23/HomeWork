@@ -134,6 +134,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         final EditText inputName = new EditText(v.getContext());
         inputName.setHint("Enter name");
+        inputName.setText(RecyclerAdapter.this.contacts.get(position).getName());
         layout.addView(inputName);
 
         final TextView inputView = new TextView(v.getContext());
@@ -141,7 +142,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         layout.addView(inputView);
 
         final EditText inputPrice = new EditText(v.getContext());
-        inputPrice.setHint("Enter price");
+        inputPrice.setHint("Enter number");
+        inputPrice.setText(RecyclerAdapter.this.contacts.get(position).getNumber());
         layout.addView(inputPrice);
 
         alertDialog.setView(layout);

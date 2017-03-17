@@ -1,5 +1,7 @@
 package com.pineapple.softgroup.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -24,7 +26,9 @@ public class FragmentRegestration extends Fragment {
     private Button сheck_in, cancel;
     DBHelper dbHelper;
     private FragmentLogin fragmentLogin;
+    private FragmentContact fragmentContact;
     private List<User> list;
+    SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -33,22 +37,23 @@ public class FragmentRegestration extends Fragment {
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_regestration, null);
 
-        ((MainActivity)getActivity()).toggle.setDrawerIndicatorEnabled(false);
-        ((MainActivity)getActivity()).drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        ((MainActivity) getActivity()).toggle.setDrawerIndicatorEnabled(false);
+        ((MainActivity) getActivity()).drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         сheck_in = (Button) v.findViewById(R.id.сheck_in);
-        cancel = (Button)v.findViewById(R.id.cancel);
+        cancel = (Button) v.findViewById(R.id.cancel);
 
-        editNameRegistration = (EditText)v.findViewById(R.id.editNameRegistration);
-        editEmailRegistration = (EditText)v.findViewById(R.id.editEmailRegistration);
-        editPassRegistration  = (EditText)v.findViewById(R.id.editPassRegistration);
+        editNameRegistration = (EditText) v.findViewById(R.id.editNameRegistration);
+        editEmailRegistration = (EditText) v.findViewById(R.id.editEmailRegistration);
+        editPassRegistration = (EditText) v.findViewById(R.id.editPassRegistration);
 
         fragmentLogin = new FragmentLogin();
+        fragmentContact = new FragmentContact();
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               getFragmentManager().beginTransaction().replace(R.id.container, fragmentLogin).commit();
+                getFragmentManager().beginTransaction().replace(R.id.container, fragmentLogin).commit();
             }
         });
         dbHelper = new DBHelper(getActivity());
@@ -56,17 +61,20 @@ public class FragmentRegestration extends Fragment {
         сheck_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String name     = editNameRegistration.getText().toString();
-                final String email    = editEmailRegistration.getText().toString();
+                final String name = editNameRegistration.getText().toString();
+                final String email = editEmailRegistration.getText().toString();
                 final String password = editPassRegistration.getText().toString();
 
-                if (isPasswordValid(password) && isNameValid(name)) {
+                if (isPasswordValid(password) && isNameValid(name) && isEmailValid(email) && isDublicateEmail(email) ) {
                     User ct = new User(dbHelper.countUser, name, email, password);
                     dbHelper.addContact(ct);
-                    Toast.makeText(getActivity(), "\n" +
-                            "Are you registered",Toast.LENGTH_SHORT).show();
+                    getFragmentManager().beginTransaction().replace(R.id.container, fragmentContact).commit();
+                    sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor ed = sharedPreferences.edit();
+                    ed.putBoolean("isLocked", true);
+                    ed.commit();
                 } else {
-                    Toast.makeText(getActivity(), "Wrong email/password",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Wrong email/password", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -97,7 +105,9 @@ public class FragmentRegestration extends Fragment {
                     value = true;
                 }
             }
-        } else { value = true; }
+        } else {
+            value = true;
+        }
 
         return value;
     }

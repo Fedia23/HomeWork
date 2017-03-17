@@ -198,7 +198,7 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
                 markerAlertDialog.setPositiveButton("CHENGE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        changeMarker(marker.getPosition());
+                        changeMarker(marker);
                     }
                 });
 
@@ -252,7 +252,7 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
         init();
     }
 
-    public void changeMarker(final LatLng ltng) {
+    public void changeMarker(final Marker marker) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
         final LinearLayout layout = new LinearLayout(mapFragment.getActivity());
@@ -261,7 +261,9 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
         final EditText inputName = new EditText(mapFragment.getActivity());
         final EditText inputDescription = new EditText(mapFragment.getActivity());
         inputName.setHint("Enter name");
+        inputName.setText(marker.getTitle());
         inputDescription.setHint("Enter description");
+        inputDescription.setText(marker.getSnippet());
         layout.addView(inputName);
         layout.addView(inputDescription);
 
@@ -273,16 +275,16 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback {
                 deleteMarker(getLatLng());
 
                 if (inputName.getText().toString().isEmpty()) {
-                    setName(getState(ltng.latitude, ltng.longitude));
+                    setName(getState(marker.getPosition().latitude, marker.getPosition().longitude));
                     if (inputDescription.getText().toString().isEmpty()) {
-                         setDescription(getState(ltng.latitude, ltng.longitude));
+                         setDescription(getState(marker.getPosition().latitude, marker.getPosition().longitude));
                     }
                 } else {
                      setName(inputName.getText().toString());
                      setDescription(inputDescription.getText().toString());
                 }
                  //Оновити дані маркеру в БД
-                dbHelperMap.addMarker(new com.pineapple.softgroup.DB.model.Marker(getName(), getDescription(), ltng.latitude, ltng.longitude));
+                dbHelperMap.addMarker(new com.pineapple.softgroup.DB.model.Marker(getName(), getDescription(), marker.getPosition().latitude, marker.getPosition().longitude));
 
                 init();
             }

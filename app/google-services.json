@@ -59,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "798425791471-04nt2od8rgelbtvv7idp2uaisqu1inc5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pineapple.softgroup",
+            "certificate_hash": "5668ff0fb19857304bef0ecb23f8b73b905f59bc"
+          }
+        },
+        {
           "client_id": "798425791471-ngtk52kdrkb362ovoqtfk4ugtt568a40.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -73,8 +81,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798425791471-ngtk52kdrkb362ovoqtfk4ugtt568a40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

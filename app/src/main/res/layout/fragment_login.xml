@@ -107,16 +107,16 @@
                     android:elevation="0dp"
                     android:layout_height="25dp"></Button>
 
-                <com.facebook.login.widget.LoginButton
+                <Button
+                    android:text="Continue with Facebook"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/fb_login_btn"
-                    android:layout_below="@+id/googleBtn"
-                    android:layout_alignLeft="@+id/googleBtn"
-                    android:layout_alignStart="@+id/googleBtn"
-                    android:layout_marginTop="20dp"
-                    android:layout_alignRight="@+id/googleBtn"
-                    android:layout_alignEnd="@+id/googleBtn" />
+                    android:background="@drawable/google_radius"
+                    android:id="@+id/buttonSingInFacebook"
+                    android:layout_marginTop="15dp"
+                    android:inputType="textNoSuggestions"
+
+                    android:elevation="0dp"
+                    android:layout_height="25dp"></Button>
 
             </LinearLayout>
         </ScrollView>

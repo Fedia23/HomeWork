@@ -77,9 +77,10 @@ public class DBHelperLastLocation extends SQLiteOpenHelper {
         String countQuery = "SELECT  * FROM " + TABLE_CONTACT;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
         cursor.close();
 
-        return cursor.getCount();
+        return count;
     }
 
     public void deleteAll() {

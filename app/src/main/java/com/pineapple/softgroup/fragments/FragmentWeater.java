@@ -1,11 +1,14 @@
 package com.pineapple.softgroup.fragments;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.AsyncTask;
@@ -36,6 +39,8 @@ import com.pineapple.softgroup.json.Example;
 import com.pineapple.softgroup.json.Location;
 
 import java.io.IOException;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,7 +76,7 @@ public class FragmentWeater extends Fragment {
     private DBHelperLastLocation dbHelperLastLocation;
     private List<LastLocation> lastLocationList;
     private LocationManager locationManager;
-    private String myLocation;
+    private String myLocation = null;
     private String key;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -83,32 +88,13 @@ public class FragmentWeater extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_weater, null);
-
-        textCurent = (TextView) v.findViewById(R.id.textCurent);
-        textLocation = (TextView) v.findViewById(R.id.textLocation);
-        textCondition = (TextView) v.findViewById(R.id.textCondition);
-        textTemp = (TextView) v.findViewById(R.id.textTemp);
-        textWind = (TextView) v.findViewById(R.id.textWind);
-        imageWeather = (ImageView) v.findViewById(R.id.imageWeather);
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBar2);
-
-        forecastLayout = (LinearLayout) v.findViewById(R.id.forecastLayout);
-        oneDay = (TextView) v.findViewById(R.id.oneDay);
-        oneImage = (ImageView) v.findViewById(R.id.oneImage);
-        twoDay = (TextView) v.findViewById(R.id.twoDay);
-        twoImage = (ImageView) v.findViewById(R.id.twoImage);
-        threeDay = (TextView) v.findViewById(R.id.threeDay);
-        threeImage = (ImageView) v.findViewById(R.id.threeImage);
-        fourDay = (TextView) v.findViewById(R.id.fourDay);
-        fourImage = (ImageView) v.findViewById(R.id.fourImage);
-        fiveDay = (TextView) v.findViewById(R.id.fiveDay);
-        fiveImage = (ImageView) v.findViewById(R.id.fiveImage);
-        sixDay = (TextView) v.findViewById(R.id.sixDay);
-        sixImage = (ImageView) v.findViewById(R.id.sixImage);
-
         locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
-        key = "4eea53de339c44399f8181049171302";
+        componentFindId(v);
+
+        dontShowComponent();
+
+        checkTheInternet();
 
         new AsynkWeater().execute();
 
@@ -131,7 +117,11 @@ public class FragmentWeater extends Fragment {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(android.location.Location location) {
-                setMyLocation(location);
+                int i = 0;
+                if (i == 0) {
+                    setMyLocation(location);
+                    i++;
+                }
             }
 
             @Override
@@ -165,21 +155,25 @@ public class FragmentWeater extends Fragment {
     }
 
     public void setMyLocation(android.location.Location location) {
-
-        dbHelperLastLocation = new DBHelperLastLocation(getActivity());
-        lastLocationList = dbHelperLastLocation.getAllLockation();
+            dbHelperLastLocation = new DBHelperLastLocation(getActivity());
+            lastLocationList = dbHelperLastLocation.getAllLockation();
 
         if (location == null) {
+
             if (lastLocationList.isEmpty()) {
-                Toast.makeText(getActivity(), " NO Connect !!!", Toast.LENGTH_LONG).show();
+                sleepTime(2);
+                Toast.makeText(getActivity(), "Location is empty !!!", Toast.LENGTH_LONG).show();
                 myLocation = "Kiev";
             } else {
+                sleepTime(2);
                 Toast.makeText(getActivity(), " Last Connection", Toast.LENGTH_LONG).show();
                 myLocation = lastLocationList.get(lastLocationList.size() - 1).getLatitude() +
                         "," + lastLocationList.get(lastLocationList.size() - 1).getLongitude();
             }
+
         } else {
-            Toast.makeText(getActivity(), "Connection...", Toast.LENGTH_LONG).show();
+            sleepTime(2);
+            Toast.makeText(getActivity(), "Location connection . . .", Toast.LENGTH_LONG).show();
             myLocation = (location.getLatitude() + "," + location.getLongitude());
         }
         new AsynkWeater().execute();
@@ -192,8 +186,56 @@ public class FragmentWeater extends Fragment {
         return myLocation;
     }
 
+    private void componentFindId(View v) {
+        textCurent = (TextView) v.findViewById(R.id.textCurent);
+        textLocation = (TextView) v.findViewById(R.id.textLocation);
+        textCondition = (TextView) v.findViewById(R.id.textCondition);
+        textTemp = (TextView) v.findViewById(R.id.textTemp);
+        textWind = (TextView) v.findViewById(R.id.textWind);
+        imageWeather = (ImageView) v.findViewById(R.id.imageWeather);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBar2);
+
+        forecastLayout = (LinearLayout) v.findViewById(R.id.forecastLayout);
+        oneDay = (TextView) v.findViewById(R.id.oneDay);
+        oneImage = (ImageView) v.findViewById(R.id.oneImage);
+        twoDay = (TextView) v.findViewById(R.id.twoDay);
+        twoImage = (ImageView) v.findViewById(R.id.twoImage);
+        threeDay = (TextView) v.findViewById(R.id.threeDay);
+        threeImage = (ImageView) v.findViewById(R.id.threeImage);
+        fourDay = (TextView) v.findViewById(R.id.fourDay);
+        fourImage = (ImageView) v.findViewById(R.id.fourImage);
+        fiveDay = (TextView) v.findViewById(R.id.fiveDay);
+        fiveImage = (ImageView) v.findViewById(R.id.fiveImage);
+        sixDay = (TextView) v.findViewById(R.id.sixDay);
+        sixImage = (ImageView) v.findViewById(R.id.sixImage);
+    }
+
+    private void sleepTime(Integer second) {
+        try {
+            Thread.sleep(1000 * second);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
+    private void checkTheInternet() {
+        if (isNetworkAvailable()) {
+
+        } else {
+            sleepTime(5);
+            Toast.makeText(getActivity(), "No internet ! ! ! ", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public void loadDate() {
+        key = "4eea53de339c44399f8181049171302";
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.apixu.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -249,16 +291,18 @@ public class FragmentWeater extends Fragment {
                     textLocation.setText(location.getName() + " ! " + location.getCountry() + ", " + location.getRegion());
 
                     textCurent.setText(current.getLastUpdated());
-                    textTemp.setText("Temperature " + current.getTempC() + "°C");
+                    textTemp.setText("Temperature: " + current.getTempC() + "°C");
                     textWind.setText("Wind: " + current.getWindMph() + "m/ph");
                     textCondition.setText("Condition: " + condition.getText());
                     String ikon = condition.getIcon();
+
                 } catch(Exception e) {
 
                 }
                 //Glide.with(FragmentWeater.this).load("http:"+ikon).centerCrop().into(imageWeather);
                 // Picasso.with(getActivity()).load("http:"+ikon).into(imageWeather);
                 setupUI();
+                showComponent();
             }
 
             @Override
@@ -266,6 +310,28 @@ public class FragmentWeater extends Fragment {
                 Log.e("Error:", t.getMessage());
             }
         });
+    }
+
+    private void dontShowComponent() {
+        textCurent.setVisibility(View.INVISIBLE);
+        textLocation.setVisibility(View.INVISIBLE);
+        textCondition.setVisibility(View.INVISIBLE);
+        textTemp.setVisibility(View.INVISIBLE);
+        textWind.setVisibility(View.INVISIBLE);
+        imageWeather.setVisibility(View.INVISIBLE);
+        forecastLayout.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void showComponent() {
+        textCurent.setVisibility(View.VISIBLE);
+        textLocation.setVisibility(View.VISIBLE);
+        textCondition.setVisibility(View.VISIBLE);
+        textTemp.setVisibility(View.VISIBLE);
+        textWind.setVisibility(View.VISIBLE);
+        imageWeather.setVisibility(View.VISIBLE);
+        forecastLayout.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void setupUI() {
@@ -420,14 +486,11 @@ public class FragmentWeater extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            textCurent.setVisibility(View.VISIBLE);
-            textLocation.setVisibility(View.VISIBLE);
-            textCondition.setVisibility(View.VISIBLE);
-            textTemp.setVisibility(View.VISIBLE);
-            textWind.setVisibility(View.VISIBLE);
-            imageWeather.setVisibility(View.VISIBLE);
-            forecastLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
+            try {
+                Thread.sleep(1000 * 2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

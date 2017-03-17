@@ -74,12 +74,12 @@ public class FragmentLogout extends Fragment {
                     SharedPreferences.Editor ed = sharedPreferences.edit();
                     ed.putBoolean("isGoogle", false);
                     ed.commit();
-                    mGoogleApiClient.disconnect();
+                    if (mGoogleApiClient != null) {
+                        mGoogleApiClient.disconnect();
+                    }
                     FirebaseAuth.getInstance().signOut();
                     mAuth.signOut();
-                    getActivity().finish();
                 } else {
-
                     SharedPreferences.Editor ed = sharedPreferences.edit();
                     ed.putBoolean("isLocked", false);
                     ed.commit();
