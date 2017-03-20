@@ -6,7 +6,8 @@
     android:fitsSystemWindows="true"
     tools:context="com.cholak.v3.appPineapple.MainActivity"
     android:id="@+id/fragment_logout"
-    android:background="@color/contentColor">
+    android:background="@color/contentColor"
+    >
 
     <LinearLayout
         android:orientation="vertical"
@@ -16,7 +17,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+      >
 
         <TextView
             android:text="Log out ?"
@@ -25,11 +27,14 @@
             android:textSize="25dp"
             android:id="@+id/textView"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="30dp"/>
+            android:layout_marginBottom="30dp"
+            android:layout_gravity="center"
+       />
 
         <GridLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
 
             <Button
                 android:text="Yes"

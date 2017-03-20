@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity
          callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void facebookGo(Button facebook) {
+    public void facebookGo(ImageButton facebook) {
 
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
             @Override

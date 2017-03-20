@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
@@ -31,7 +32,8 @@ public class FragmentLogin extends Fragment implements
         View.OnClickListener{
 
     private EditText login, password;
-    private Button sing_in, registration, google, facebook;
+    private Button sing_in, registration;
+    private ImageButton google, facebook;
     SharedPreferences sharedPreferences;
     private FragmentContact fragmentContact;
     private static final String TAG = "GoogleActivity";
@@ -64,8 +66,8 @@ public class FragmentLogin extends Fragment implements
 
         sing_in = (Button)v.findViewById(R.id.sing_in);
         registration = (Button)v.findViewById(R.id.registration);
-        google = (Button)v.findViewById(R.id.buttonSingInGoogle);
-        facebook = (Button)v.findViewById(R.id.buttonSingInFacebook);
+        google = (ImageButton) v.findViewById(R.id.buttonSingInGoogle);
+        facebook = (ImageButton) v.findViewById(R.id.buttonSingInFacebook);
 
 
         GoogleApiClient.OnConnectionFailedListener connectionListener;

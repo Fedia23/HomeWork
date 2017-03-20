@@ -26,8 +26,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:weightSum="1">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -52,6 +54,13 @@
                     android:id="@+id/login"
                     android:layout_marginBottom="10dp" />
 
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:id="@+id/password"
+                    android:layout_marginBottom="10dp" />
+
                 <TextView
                     android:text="@string/enterPassword"
                     android:layout_width="match_parent"
@@ -61,17 +70,11 @@
                     android:inputType="textNoSuggestions"
                     />
 
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:id="@+id/password"
-                    android:layout_marginBottom="10dp" />
-
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
 
                     <Button
                         android:text="Sing in"
@@ -96,30 +99,33 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:text="Continue with Google"
-                    android:layout_width="match_parent"
-                    android:background="@drawable/google_radius"
-                    android:id="@+id/buttonSingInGoogle"
-                    android:layout_marginTop="15dp"
-                    android:inputType="textNoSuggestions"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="23dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.10">
 
-                    android:elevation="0dp"
-                    android:layout_height="25dp"></Button>
 
-                <Button
-                    android:text="Continue with Facebook"
-                    android:layout_width="match_parent"
-                    android:background="@drawable/google_radius"
-                    android:id="@+id/buttonSingInFacebook"
-                    android:layout_marginTop="15dp"
-                    android:inputType="textNoSuggestions"
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/com_facebook_button_icon_blue"
+                        android:id="@+id/buttonSingInFacebook" />
 
-                    android:elevation="0dp"
-                    android:layout_height="25dp"></Button>
+                    <ImageButton
+                        android:layout_width="42dp"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal"
+                        android:id="@+id/buttonSingInGoogle"
+                        android:layout_marginLeft="10dp"/>
+
+                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
 
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>
